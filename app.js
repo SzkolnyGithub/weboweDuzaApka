@@ -3,6 +3,7 @@ const app = express()
 const fs = require('fs')
 const mysql = require('mysql')
 const haversine = require('haversine-distance')
+const cities = require('./filterLonLatCities.json')
 app.use(express.json())
 
 var con = mysql.createConnection({
@@ -32,17 +33,23 @@ function getData() {
                             con.query(sql2,[jsonData[i].id_stacji, jsonData[i].stacja, jsonData[i].data_pomiaru, jsonData[i].godzina_pomiaru, jsonData[i].temperatura, jsonData[i].predkosc_wiatru, jsonData[i].kierunek_wiatru, jsonData[i].wilgotnosc_wzgledna, jsonData[i].suma_opadu, jsonData[i].cisnienie], function(err, result, field) {
                                 if(err) throw err
                                 console.log("zapisano rzad: " + i)
-                            })
-                            let sql3 = "CREATE TABLE IF NOT EXISTS lokalizacje(miejscowosc TEXT(20) NOT NULL, lon DOUBLE(10, 3) NOT NULL, lat DOUBLE(10, 3) NOT NULL)"
-                            con.query(sql3, function(err, result, fields) {
+                            })}})
+                        let sql3 = "CREATE TABLE IF NOT EXISTS lokalizacje(miejscowosc TEXT(20) NOT NULL, lon DOUBLE(10, 3) NOT NULL, lat DOUBLE(10, 3) NOT NULL)"
+                        con.query(sql3, function(err, result, fields) {
+                            if(err) throw err
+                            let sql4 = "INSERT INTO lokalizacje VALUES (?, ?, ?)"
+                            con.query("DELETE FROM lokalizacje", function(err, result, fields) {
                                 if(err) throw err
-                                let sql4 = "INSERT INTO lokalizacje VALUES (?, ?, ?)"
-                                console.log("tabela utworzona pomyslnie")
-                                con.query("DELETE FROM lokalizacje", function(err, result, fields) {
-                                    
+                                let iter = 0;
+                                cities.forEach((element) => {
+                                    con.query(sql4,[element.miejscowosc, element.lon, element.lat], function(err, result, fields) {
+                                        if(err) throw err
+                                        console.log("Dodano lokalizacje " + iter)
+                                        iter++
+                                    })
                                 })
                             })
-                        }})
+                        })
                     })
                 })
             })
