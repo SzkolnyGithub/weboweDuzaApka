@@ -104,9 +104,24 @@ app.get('/latLon/:lat/:lon', (req, res) => {
      let latA = req.params["lat"]
      let lonA = req.params["lon"]
     var aplikacja = { lat : latA, lon : lonA}
-    let sql = "SELECT * FROM dane"
+    let sql = "SELECT * FROM lokalizacje"
+    let min = 0;
     con.query(sql, function(err, result) {
-        res.json(result)
+            result.forEach((element) => {
+                var next = { lat : element.lat, lon : element.lon }
+                //console.log(next)
+                if(min == 0) {
+                    min = haversine(aplikacja, next)
+                }
+                let distance = haversine(aplikacja, next) / 1000 // wynik w kilometrach
+                distance = distance.toFixed()
+                //console.log(distance)
+                if(min > distance) {
+                    min = distance
+                }
+            })
+        console.log(min)
+        res.send(min.toString())
     })
 })
 
