@@ -1,7 +1,8 @@
 const express = require('express')
 const app = express()
 const fs = require('fs')
-var mysql = require('mysql')
+const mysql = require('mysql')
+const haversine = require('haversine-distance')
 app.use(express.json())
 
 var con = mysql.createConnection({
@@ -32,9 +33,14 @@ function getData() {
                                 if(err) throw err
                                 console.log("zapisano rzad: " + i)
                             })
-                            let sql3 = "CREATE TABLE IF NOT EXISTS lokalizacje(miejscowosc TEXT(20) NOT NULL, lon DOUBLE(3, 10) NOT NULL, lat DOUBLE(3, 10) NOT NULL)"
+                            let sql3 = "CREATE TABLE IF NOT EXISTS lokalizacje(miejscowosc TEXT(20) NOT NULL, lon DOUBLE(10, 3) NOT NULL, lat DOUBLE(10, 3) NOT NULL)"
                             con.query(sql3, function(err, result, fields) {
-                                
+                                if(err) throw err
+                                let sql4 = "INSERT INTO lokalizacje VALUES (?, ?, ?)"
+                                console.log("tabela utworzona pomyslnie")
+                                con.query("DELETE FROM lokalizacje", function(err, result, fields) {
+                                    
+                                })
                             })
                         }})
                     })
@@ -82,8 +88,19 @@ app.get("/dane/:id", (req, res) => {
 app.get('/latLon', (req, res) => {
      fs.readFile("./filterLonLatCities.json", "utf8", (err, data) => {
         if(err) throw err
+        console.log(data.json.parse)
+        res.send(data[0].miejscowosc)
         res.json(JSON.parse(data))
      })
+})
+app.get('/latLon/:lat/:lon', (req, res) => {
+     let latA = req.params["lat"]
+     let lonA = req.params["lon"]
+    var aplikacja = { lat : latA, lon : lonA}
+    let sql = "SELECT * FROM dane"
+    con.query(sql, function(err, result) {
+        res.json(result)
+    })
 })
 
 app.listen(3000, () => {
