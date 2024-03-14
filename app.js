@@ -95,9 +95,9 @@ app.get("/dane/:id", (req, res) => {
 app.get('/latLon', (req, res) => {
      fs.readFile("./filterLonLatCities.json", "utf8", (err, data) => {
         if(err) throw err
-        console.log(data.json.parse)
-        res.send(data[0].miejscowosc)
-        res.json(JSON.parse(data))
+        console.log(JSON.parse(data))
+        res.send(JSON.parse(data)[0].miejscowosc)
+        //res.json(JSON.parse(data))
      })
 })
 app.get('/latLon/:lat/:lon', (req, res) => {
@@ -124,7 +124,7 @@ app.get('/latLon/:lat/:lon', (req, res) => {
                     nazwa = element.miejscowosc
                 }
             })
-        console.log("\n" + min + nazwa)
+        console.log("\n" + min + " " + nazwa)
         res.send(nazwa.toString())
     })
 })
