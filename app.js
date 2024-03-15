@@ -25,28 +25,25 @@ function getData() {
                     if(err) throw err
                     console.log("tabela utworzona pomyslnie")
                     sql2 = "INSERT INTO dane VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-                    con.query("DELETE FROM dane", function(err, result, fields) {
-                        if(err) throw err
-                        fetch('https://danepubliczne.imgw.pl/api/data/synop')
-                        .then(response => response.json())
-                        .then(jsonData => {for(let i = 0; i < jsonData.length; i++) {
-                            con.query(sql2,[jsonData[i].id_stacji, jsonData[i].stacja, jsonData[i].data_pomiaru, jsonData[i].godzina_pomiaru, jsonData[i].temperatura, jsonData[i].predkosc_wiatru, jsonData[i].kierunek_wiatru, jsonData[i].wilgotnosc_wzgledna, jsonData[i].suma_opadu, jsonData[i].cisnienie], function(err, result, field) {
-                                if(err) throw err
-                                console.log("zapisano rzad: " + i)
-                            })}})
-                        let sql3 = "CREATE TABLE IF NOT EXISTS lokalizacje(miejscowosc TEXT(20) NOT NULL, lon DOUBLE(10, 3) NOT NULL, lat DOUBLE(10, 3) NOT NULL)"
-                        con.query(sql3, function(err, result, fields) {
+                    fetch('https://danepubliczne.imgw.pl/api/data/synop')
+                    .then(response => response.json())
+                    .then(jsonData => {for(let i = 0; i < jsonData.length; i++) {
+                        con.query(sql2,[jsonData[i].id_stacji, jsonData[i].stacja, jsonData[i].data_pomiaru, jsonData[i].godzina_pomiaru, jsonData[i].temperatura, jsonData[i].predkosc_wiatru, jsonData[i].kierunek_wiatru, jsonData[i].wilgotnosc_wzgledna, jsonData[i].suma_opadu, jsonData[i].cisnienie], function(err, result, field) {
                             if(err) throw err
-                            let sql4 = "INSERT INTO lokalizacje VALUES (?, ?, ?)"
-                            con.query("DELETE FROM lokalizacje", function(err, result, fields) {
-                                if(err) throw err
-                                let iter = 0;
-                                cities.forEach((element) => {
-                                    con.query(sql4,[element.miejscowosc, element.lon, element.lat], function(err, result, fields) {
-                                        if(err) throw err
-                                        console.log("Dodano lokalizacje " + iter)
-                                        iter++
-                                    })
+                            console.log("zapisano rzad: " + i)
+                        })}})
+                    let sql3 = "CREATE TABLE IF NOT EXISTS lokalizacje(miejscowosc TEXT(20) NOT NULL, lon DOUBLE(10, 3) NOT NULL, lat DOUBLE(10, 3) NOT NULL)"
+                    con.query(sql3, function(err, result, fields) {
+                        if(err) throw err
+                        let sql4 = "INSERT INTO lokalizacje VALUES (?, ?, ?)"
+                        con.query("DELETE FROM lokalizacje", function(err, result, fields) {
+                            if(err) throw err
+                            let iter = 0;
+                            cities.forEach((element) => {
+                                con.query(sql4,[element.miejscowosc, element.lon, element.lat], function(err, result, fields) {
+                                    if(err) throw err
+                                    console.log("Dodano lokalizacje " + iter)
+                                    iter++
                                 })
                             })
                         })
@@ -55,9 +52,6 @@ function getData() {
             })
         })
     })
-    /*fetch('https://danepubliczne.imgw.pl/api/data/synop')
-    .then(response => response.json())
-    .then(jsonData => fs.writeFile('data.json', JSON.stringify(jsonData, null, 2), (err) => err && console.error(err)))*/
 }
 getData()
 setInterval(getData, 3600000)

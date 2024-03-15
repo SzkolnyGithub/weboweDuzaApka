@@ -1,0 +1,17 @@
+{
+  "name": "temp-webowa-badowski4c",
+  "version": "1.0.0",
+  "description": "szukanie min dziala ale trzeba wyswietlic w res send jakies id tej stacji co jest najblizej pewnie trzeba bedzie przechowac w tym samym ifie co podstawia pod min distance",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.3",
+    "haversine": "^1.1.1",
+    "haversine-distance": "^1.2.1",
+    "mysql": "^2.18.1"
+  }
+}
