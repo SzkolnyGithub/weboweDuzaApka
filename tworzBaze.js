@@ -27,27 +27,27 @@ function getData() {
                                 if(err) throw err
                                 console.log("zapisano rzad: " + i)
                                 i++
-                        }) // nie dziala trzeba naprawic
-                    })
-                    let sql3 = "CREATE TABLE IF NOT EXISTS lokalizacje(miejscowosc TEXT(20) NOT NULL, lon DOUBLE(10, 3) NOT NULL, lat DOUBLE(10, 3) NOT NULL)"
-                    con.query(sql3, function(err, result, fields) {
-                        if(err) throw err
-                        let sql4 = "INSERT INTO lokalizacje VALUES (?, ?, ?)"
-                        con.query("DELETE FROM lokalizacje", function(err, result, fields) {
-                            if(err) throw err
-                            let iter = 0;
-                            cities.forEach((element) => {
-                                con.query(sql4,[element.miejscowosc, element.lon, element.lat], function(err, result, fields) {
-                                    if(err) throw err
-                                    console.log("Dodano lokalizacje " + iter)
-                                    iter++
-                                })
-                            })
                         })
                     })
                 })
+                miejsca()
             })
         })
     })})
+}
+function miejsca() {
+    let sql3 = "CREATE TABLE IF NOT EXISTS lokalizacje(miejscowosc TEXT(20) NOT NULL, lon DOUBLE(10, 3) NOT NULL, lat DOUBLE(10, 3) NOT NULL)"
+        con.query(sql3, function(err, result, fields) {
+            if(err) throw err
+            let sql4 = "INSERT INTO lokalizacje VALUES (?, ?, ?)"
+            let iter = 0;
+            cities.forEach((element) => {
+                con.query(sql4,[element.miejscowosc, element.lon, element.lat], function(err, result, fields) {
+                    if(err) throw err
+                    console.log("Dodano lokalizacje " + iter)
+                    iter++
+                })
+        })
+    })
 }
 getData()
