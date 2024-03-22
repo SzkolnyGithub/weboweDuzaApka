@@ -95,6 +95,8 @@ app.post('/latLon', (req, res) => {
    let nazwa = ""
    let lat = 0
    let lon = 0
+   let pred = 0;
+   let kier = 0;
    con.query(sql, function(err, result) {
            result.forEach((element) => {
                var next = { lat : element.lat, lon : element.lon }
@@ -115,7 +117,16 @@ app.post('/latLon', (req, res) => {
                }
            })
        console.log("\n" + min + " " + nazwa + " " + lat + " " + lon)
-       res.send({"lat" : lat, "lon" : lon})
+       con.query("SELECT * FROM dane", function(err, result) {
+            result.forEach((element) => {
+                if(element.stacja == nazwa) {
+                    pred = element.predkosc_wiatru
+                    kier = element.kierunek_wiatru
+                    console.log(pred + " " + kier)
+                }
+            })
+       })
+       res.send({"kierunek" : kier, "predkosc" : pred})
    })
 })
 
